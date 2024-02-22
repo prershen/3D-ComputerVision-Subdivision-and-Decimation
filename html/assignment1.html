@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>assignment1</title>
+		<style>
+			body { margin: 0; }
+		</style>
+    <script type="importmap">
+        {
+          "imports": {
+            "three": "https://unpkg.com/three@0.147.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.147.0/examples/jsm/"
+          }
+        }
+    </script>
+	</head>
+	<body>
+		<h1 style="text-align: center;">Assignment 1</h1>
+		<h2>Introduction</h2>
+		<p>For this assignment, you will be implementing two algorithms covering: 1. Loop Subdivision 2. Quadratic Error Mesh Decimation over any 3D object. 
+			<ul>
+				<li><a href="https://en.wikipedia.org/wiki/Subdivision_surface#Loop_subdivision_surface">Loop Subdivision</a></li>
+				<li><a href="https://www.cs.cmu.edu/~./garland/Papers/quadrics.pdf">Quadric Error Mesh Decimation</a></li>
+			</ul>
+			We have made available a visualization tool using the Three.js library implemented in "./js/assignment1.js" and an example implementation located in "./assignments/assignment1.py". Your objective is to create implementations for both "subdivision_loop" and "simplify_quadric_error". You are encouraged to use a programming language with which you are comfortable. The output results should be in the obj format, and you must visualize your outcomes accordingly. 
+			<br><br>
+			<b>How to Submit: </b>Please submit this template file along with your implementation as a zip file. The zip file should contain your source code, the generated results in OBJ mesh format, and a report that has been modified using this HTML file. The report should comprise your results and a concise explanation of your implementation. Alternatively, you may choose to create a GitHub repository containing all these elements and provide a link for submission.
+			<br><br>
+			<b>Grading: </b>The grading is based on the correctness of your implementation. You are encouraged to use the visualization tool to debug your implementation. You can also use the visualization tool to test your implementation on other 3D models. You can find an example of 3D model in the "./assets" folder.</p>
+		</p>
+		<h2>Loop Subdivision</h2>
+        <h3>Loop Subdivision Using Half Edge Data structure</h3>
+			<p>Loop Subdivision was implemented using Half edge representation. 
+			I have used open3D's HalfEdge data structure. In particular, open3d.geometry.HalfEdge and open3d.geometry.HalfEdgeTriangleMesh (only for loading obj file) was used. 
+			The halfedge data structure comprises of properties as follows:
+			<ol>
+				<li><strong>next:</strong> Index of the next HalfEdge in the same triangle.</li>
+				<li><strong>triangle_index:</strong> Index of the triangle containing this half edge</li>
+				<li><strong>twin:</strong> Index of the twin HalfEdge</li>
+				<li><strong>vertex_indices:</strong> Index of the ordered vertices forming this half edge</li>
+			</ol></p>
+			<p>Loop Subdivision Algorithm:</p>
+			<ol>
+				<li>Initialize the mesh with its original vertices and triangles.</li>
+				<li>For each original vertex, compute the updated vertex position based on the Loop subdivision rule.</li>
+				<li>Create new vertices at the midpoints of original edges.</li>
+				<li>For each original triangle, subdivide it into four smaller triangles using the updated and new vertices.</li>
+				<li>Smooth the updated vertices based on their neighborhood to achieve a smoother result. Odd vertices are modified based on the neighboring 4 vertices.
+					Even vertices are modified based on a beta value and its adjacent vertices.
+				</li>
+				<li>Repeat the process for a specified number of iterations or until the desired level of subdivision is achieved.</li>
+			</ol>
+			<p><strong>1 Iteration</strong>		<strong>Obj:</strong> cube_subdivided_half_edge.obj ----- Displayed below</p>
+			<p>Subdivided Mesh Info: TriangleMesh with 26 points and 48 triangles.</p>
+			<p>Time taken: 0.0</p>
+			<hr>
+			<p><strong>2 Iterations</strong>		<strong>Obj:</strong> cube_subdivided_half_edge_2.obj</p>
+			<p>Subdivided Mesh Info: TriangleMesh with 98 points and 192 triangles.</p>
+			<p>Time taken: 0.03125405311584473</p>
+			<hr>
+			<p><strong>3 Iterations</strong>		<strong>Obj:</strong> cube_subdivided_half_edge_3.obj</p>
+			<p>Subdivided Mesh Info: TriangleMesh with 386 points and 768 triangles.</p>
+			<p>Time taken: 0.2677114009857178</p>
+			<hr>
+			<div id="container1"></div>
+
+
+
+			<h3>Extra Credit: Loop Subdivision using Adjacency lists</h3>
+			<hr>
+			<p>Loop Subdivision can also be done using Adjacency lists. This method involves using lists to process the mesh. We will be using three main lists:
+				<li>Vertex list: Store triples of coordinates ( x,y,z ) tuples of indices</li>
+				<li>Edge List: Stores tuples of indices of vertices from the vertex list for each of the edges</li>
+				<li>Face List: Stores tuples of indices of vertices from the vertex list for each of the faces</li>
+			When compared to the above implementation of Loop Subdivision using Half Edge Data structure, we see that as the number of faces increases and the robustness
+			of the model increases, the runtime of the Half edge implementation increases. This is due to the time taken to prcoess a mesh in the form of a half edge data structure.
+			But depending on the kind of operation performed, the half edge data structure can be very easy to use and faster for operations  like finding neighboring triangles.
+			It can be expected that when the robustness of the model increases, especially when expensive operations have to be performed, half edge data structure will outperform adjacency lists.
+
+			</p>
+			<p><strong>Mesh Info:</strong> vertices.shape=(8, 3), faces.shape=(12, 3)&gt;</p>
+			<p><strong>1 Iteration</strong>				<strong>Obj:</strong> cube_subdivided_adjacency.obj ----- Displayed below</p>
+			<p>Subdivided Mesh Info: vertices.shape=(26, 3), faces.shape=(48, 3)&gt;</p>
+			<p>Time taken: 0.005049943923950195</p>
+			<hr>
+			<p><strong>2 Iterations</strong>			<strong>Obj:</strong> cube_subdivided_adjacency_2.obj</p>
+			<p>Subdivided Mesh Info: vertices.shape=(98, 3), faces.shape=(192, 3)&gt;</p>
+			<p>Time taken: 0.0040111541748046875</p>
+			<hr>
+			<p><strong>3 Iterations</strong>			<strong>Obj:</strong> cube_subdivided_adjacency_3.obj</p>
+			<p>Subdivided Mesh Info: vertices.shape=(386, 3), faces.shape=(768, 3)&gt;</p>
+			<p>Time taken: 0.0041539669036865234</p></p>
+			<div id="container1_adj"></div>
+
+
+
+			<h3>Extra Credit: Corner Cases Covered</h3>
+			<hr>
+			<p>In Loop Subdivision, there are many corner cases that can be covered.</p>
+			<li> When the Q Matrix is Singular Matrix, i.e, the matrix cannot be invertible, then
+				we will have to consider a different aproach in finding the optimum x. Some options are
+				choosing the midpoint or the endpoints themselves. In my implementation, I have considered
+				the midpoint of the vertices in such cases.
+			</li>
+			<li>
+				Boundary cases: when the number of adjacent edges of a vertex is less than 3. I have covered this case in calculatin of both
+				odd and even vertices.
+			</li>
+
+
+
+			<h2>Quadric Error Mesh Decimation</h2>
+			<p>Quadric Error Decimation uses iterative contractions of vertex pairs to simplify
+				models and maintains surface error approximations using quadric matrices. This can
+				facilitate much better approximations, both visually and with respect to geometric error.</p>
+			<p>Algorithm Implementation:</p>
+				<ol>
+					<li>Compute the Q matrices for all the initial vertices.</li>
+					<li>Compute the optimal contraction target v¯ for each edge (v1, v2 ). The error = v_T(Q1 +Q2 )v of this target vertex becomes the cost of contracting that pair.</li>
+					<li>Place all the pairs in a heap keyed on cost with the minimum cost pair at the top.</li>
+					<li>Iteratively remove the pair (v1, v2 ) of least cost from the heap, contract this pair, and update the costs of all valid pairs involving v1.</li>
+				</ol>
+			<hr>
+			<p><strong>Face Count:</strong> 8			<strong>Obj:</strong> cube_decimated_8faces.obj</p>
+			<p>Decimated Mesh Info: vertices.shape=(6, 3), faces.shape=(8, 3)&gt;</p>
+			<p>Time taken: 0.009428739547729492</p>
+			<hr>
+			<p><strong>Face Count:</strong> 6			<strong>Obj:</strong> cube_decimated_6faces.obj</p>
+			<p>Decimated Mesh Info: vertices.shape=(5, 3), faces.shape=(6, 3)&gt;</p>
+			<p>Time taken: 0.009027481079101562</p>
+			<hr>
+			<p><strong>Face Count:</strong> 4			<strong>Obj:</strong> cube_decimated.obj ----- Displayed below</p>
+			<p>Decimated Mesh Info: vertices.shape=(4, 3), faces.shape=(4, 3)&gt;</p>
+			<p>Time taken: 0.016532421112060547</p>
+			<div id="container2"></div>
+
+
+		<script type="module" src="../js/assignment1.js"></script>
+		<script type="module" src="../js/assignment1_adj.js"></script>
+		<script type="module" src="../js/assignment1_decimated.js"></script>
+	</body>
+</html>
