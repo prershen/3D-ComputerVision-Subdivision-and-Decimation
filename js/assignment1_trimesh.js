@@ -4,7 +4,7 @@ import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 
-const container = document.getElementById( 'container2' );
+const container = document.getElementById( 'container1_trimesh' );
 container.style.position = 'relative';
 
 let renderer, stats, gui;
@@ -33,7 +33,7 @@ function initScene() {
 	ambientLight = new THREE.AmbientLight( 0x404040, 2 );
 	scene.add( ambientLight );
 	
-	let path = '../assets/assignment1/cube_decimated_6faces.obj';
+	let path = '../assets/assignment1/cube_subdivided_trimesh.obj';
 	// the loading of the object is asynchronous
 	let loader = new OBJLoader();
 	loader.load( 

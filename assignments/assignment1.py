@@ -378,6 +378,13 @@ def simplify_quadric_error(mesh, face_count=1):
 if __name__ == '__main__':
     
     # Loop Subdivision using Half Edge Data Structure
+    mesh_trimesh = trimesh.creation.box(extents=[1, 1, 1])
+    start = time.time()
+    mesh_subdivided_trimesh = mesh_trimesh.subdivide_loop(iterations=1)
+    end = time.time()
+    print(f'Decimated Mesh Info: {mesh_subdivided_trimesh}')
+    print("Time taken: ", end-start)
+    mesh_subdivided_trimesh.export('assets/assignment1/cube_subdivided_trimesh.obj')
 
     print("Loop Subdivision using Half Edge Data Structure")
     print('-------------------------------------------------')
@@ -445,6 +452,14 @@ if __name__ == '__main__':
     ##########################################################################################################
 
     print("Quadric Decimation")
+    mesh_trimesh = trimesh.creation.box(extents=[1, 1, 1])
+    start = time.time()
+    mesh_decimated_trimesh = mesh.simplify_quadric_decimation(6)
+    end = time.time()
+    print(f'Decimated Mesh Info: {mesh_decimated_trimesh}')
+    print("Time taken: ", end-start)
+    mesh_decimated_trimesh.export('assets/assignment1/cube_decimated_trimesh.obj')
+
     print('-------------------------------------------------')
     print(" Face Count: 8")
     mesh = trimesh.creation.box(extents=[1, 1, 1])
